@@ -1,3 +1,4 @@
+import math
 import sys
 from importlib import reload
 
@@ -94,11 +95,13 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.CsvVisualizer.setCurrentCell(row+1, col)
 
     def applyFilter(self):
-        categories = [str(self.ui.ListSelector.item(i).text()) for i in range(self.ui.ListSelector.count())]
+        categories = [str(self.ui.ListSelector.item(i).text()).strip() for i in range(self.ui.ListSelector.count())]
 
         print(categories)
         selected_col = self.ui.CsvVisualizer.currentColumn()
         filtered_index = ~self.df[self.df.columns[selected_col]].isin(categories)
+        filtered_index = ~self.df[self.df.columns[selected_col]].apply(
+            lambda x: bool(str(x) != "nan" and all(elem.strip() in categories for elem in x.split(","))))
         filtered_df = self.df[filtered_index]
         self.updateTable(filtered_df)
 
