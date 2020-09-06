@@ -44,6 +44,25 @@
               <verstretch>1</verstretch>
              </sizepolicy>
             </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QAbstractScrollArea::AdjustToContents</enum>
+            </property>
+            <property name="textElideMode">
+             <enum>Qt::ElideNone</enum>
+            </property>
+            <property name="rowCount">
+             <number>2</number>
+            </property>
+            <property name="columnCount">
+             <number>2</number>
+            </property>
+            <attribute name="horizontalHeaderCascadingSectionResizes">
+             <bool>true</bool>
+            </attribute>
+            <row/>
+            <row/>
+            <column/>
+            <column/>
            </widget>
           </item>
           <item>

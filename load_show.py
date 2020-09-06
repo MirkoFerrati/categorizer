@@ -34,6 +34,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             item = QTableWidgetItem(x)
             item.setFlags(QtCore.Qt.NoItemFlags)# | QtCore.Qt.ItemIsSelectable)
             self.ui.CsvVisualizer.setItem(i, self.df_cols, item)
+        self.ui.CsvVisualizer.setHorizontalHeaderLabels(dataframe.columns + "index")
         self.ui.CsvVisualizer.blockSignals(False)
 
     def createTable(self):
