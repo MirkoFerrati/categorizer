@@ -25,6 +25,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.df_rows = len(dataframe.index)
         self.ui.CsvVisualizer.setRowCount(self.df_rows)
         self.ui.CsvVisualizer.setColumnCount(self.df_cols+1)
+        self.ui.splitter.setStretchFactor(1, 1)
         for i in range(self.df_rows):
             for j in range(self.df_cols):
                 x = '{}'.format(dataframe.iloc[i, j])
