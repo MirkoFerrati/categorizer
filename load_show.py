@@ -1,5 +1,6 @@
 import math
 import sys
+import re
 from importlib import reload
 
 import PyQt5
@@ -49,7 +50,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
     def new_option(self):
         new_item = self.ui.AddOption.toPlainText()
         if new_item != "":
-            items = new_item.split(',')
+#            items = new_item.split(',')
+            items = filter(None, re.split("[,\n]+", new_item))
             for i in items:
                 stripped = i.strip()
                 if stripped not in self.items:
@@ -64,13 +66,17 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.ListSelector.clear()
         self.ui.ListSelector.addItems(self.items)
 
+    def ClearOptions(self):
+        self.ui.ListSelector.clear()
+
     def LoadOptions(self):
         col = self.ui.CsvVisualizer.currentColumn()
         uniques = set()
         uniques.clear()
         for i in range(self.df_rows):
-            stripped = str(self.df.iloc[i, col]).strip()
-            uniques.add(stripped)
+            splitted = str(self.df.iloc[i, col]).split(',')
+            for s in splitted:
+                uniques.add(s.strip())
         if '' in uniques:
             uniques.remove('')
         if "" in uniques:
@@ -172,6 +178,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.FilterBox.stateChanged.connect(self.filterValues)
         self.ui.LoadOptions.clicked.connect(self.LoadOptions)
         self.ui.RemoveOption.clicked.connect(self.RemoveOption)
+        self.ui.ClearOption.clicked.connect(self.ClearOptions)
         self.ui.CsvVisualizer.cellChanged.connect(self.UpdateDataframe)
 
 
