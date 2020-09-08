@@ -6,6 +6,8 @@ from importlib import reload
 import PyQt5
 import PyQt5.QtCore as QtCore
 import PyQt5.QtGui as QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QWheelEvent
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow as QMainWindow, QFrame, QTableWidget, QTableWidgetItem, QAction, QFileDialog
@@ -54,7 +56,6 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
     def new_option(self):
         new_item = self.ui.AddOption.toPlainText()
         if new_item != "":
-#            items = new_item.split(',')
             items = filter(None, re.split("[,\n]+", new_item))
             for i in items:
                 stripped = i.strip()
@@ -161,6 +162,17 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         if action == self.ui.actionHide_good_ones:
             self.ui.FilterBox.toggle()
 
+    def wheelEvent(self, event: QWheelEvent):
+        if event.modifiers() == QtCore.Qt.ControlModifier:
+            self.font_size = self.font_size + event.angleDelta().y()/3
+            if self.font_size < 5:
+                self.font_size = 5
+            fnt = self.ui.CsvVisualizer.font()
+            fnt.setPointSize(self.font_size)
+            self.ui.CsvVisualizer.setFont(fnt)
+        else:
+            event.ignore()
+
     def __init__(self):
         """ Initialization
         Parameters
@@ -171,6 +183,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.df = None
         self.df_cols = 1
         self.df_rows = 1
+        self.font_size = 12
 
         # Base class
         QMainWindow.__init__(self)
