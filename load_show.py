@@ -100,11 +100,13 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             if i != "":
                 val = val + sep + i.text()
                 sep = ", "
-        self.ui.CsvVisualizer.currentItem().setText(val)
+        for cell in self.ui.CsvVisualizer.selectedItems():
+            cell.setText(val)
         self.ui.ListSelector.clearSelection()
         row = self.ui.CsvVisualizer.currentRow()
         col = self.ui.CsvVisualizer.currentColumn()
-        self.ui.CsvVisualizer.setCurrentCell(row+1, col)
+        if len(self.ui.CsvVisualizer.selectedItems()) == 1:
+            self.ui.CsvVisualizer.setCurrentCell(row+1, col)
 
     def applyFilter(self):
         categories = [str(self.ui.ListSelector.item(i).text()).strip() for i in range(self.ui.ListSelector.count())]
