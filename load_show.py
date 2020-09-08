@@ -28,7 +28,6 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.df_rows = len(dataframe.index)
         self.ui.CsvVisualizer.setRowCount(self.df_rows)
         self.ui.CsvVisualizer.setColumnCount(self.df_cols+1)
-        self.ui.splitter.setStretchFactor(1, 1)
         for i in range(self.df_rows):
             for j in range(self.df_cols):
                 x = '{}'.format(dataframe.iloc[i, j])
@@ -150,6 +149,9 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         if action == self.ui.actionSave:
             self.SaveFile()
 
+    def DeselectAllOptions(self):
+        self.ui.ListSelector.clearSelection()
+
     def ProcessCategoryMenu(self, action):
         if action == self.ui.actionConfirm_and_write:
             self.writeValues()
@@ -161,6 +163,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             self.RemoveOption()
         if action == self.ui.actionHide_good_ones:
             self.ui.FilterBox.toggle()
+        if action == self.ui.actionDeselect_All:
+            self.DeselectAllOptions()
 
     def wheelEvent(self, event: QWheelEvent):
         if event.modifiers() == QtCore.Qt.ControlModifier:
@@ -202,6 +206,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.RemoveOption.clicked.connect(self.RemoveOption)
         self.ui.ClearOption.clicked.connect(self.ClearOptions)
         self.ui.CsvVisualizer.cellChanged.connect(self.UpdateDataframe)
+        self.ui.DeselectButton.clicked.connect(self.DeselectAllOptions)
+        self.ui.splitter.setStretchFactor(1, 0)
 
 
 def main():

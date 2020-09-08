@@ -111,11 +111,22 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="ConfirmButton">
-              <property name="text">
-               <string>Confirm and write</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QPushButton" name="ConfirmButton">
+                <property name="text">
+                 <string>Confirm and write</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="DeselectButton">
+                <property name="text">
+                 <string>Deselect</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -166,6 +177,7 @@
     <addaction name="actionAdd_options"/>
     <addaction name="separator"/>
     <addaction name="actionConfirm_and_write"/>
+    <addaction name="actionDeselect_All"/>
     <addaction name="separator"/>
     <addaction name="actionHide_good_ones"/>
    </widget>
@@ -227,6 +239,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+H</string>
+   </property>
+  </action>
+  <action name="actionDeselect_All">
+   <property name="text">
+    <string>Deselect All</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+W</string>
    </property>
   </action>
  </widget>
