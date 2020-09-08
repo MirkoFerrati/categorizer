@@ -177,6 +177,16 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         else:
             event.ignore()
 
+    def eventFilter(self, obj, event):
+        if obj.objectName() == "ListSelector":
+            if event.type() == QtCore.QEvent.KeyPress:
+                if event.modifiers() == QtCore.Qt.ControlModifier and event.key() == Qt.Key_C:
+                    QtGui.QClipboard.clear(QApplication.clipboard(), mode=QtGui.QClipboard.Clipboard)
+                    output = '\n'.join(s.text() for s in self.ui.ListSelector.selectedItems())
+                    QtGui.QClipboard.setText(QApplication.clipboard(), output, mode=QtGui.QClipboard.Clipboard)
+                    return True
+        return False
+
     def __init__(self):
         """ Initialization
         Parameters
@@ -208,6 +218,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.CsvVisualizer.cellChanged.connect(self.UpdateDataframe)
         self.ui.DeselectButton.clicked.connect(self.DeselectAllOptions)
         self.ui.splitter.setStretchFactor(1, 0)
+
+        self.ui.ListSelector.installEventFilter(self)
 
 
 def main():
