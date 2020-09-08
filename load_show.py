@@ -35,16 +35,20 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             item = QTableWidgetItem(x)
             item.setFlags(QtCore.Qt.NoItemFlags)# | QtCore.Qt.ItemIsSelectable)
             self.ui.CsvVisualizer.setItem(i, self.df_cols, item)
-        self.ui.CsvVisualizer.setHorizontalHeaderLabels(dataframe.columns + "index")
+        columns=[]
+        for c in dataframe.columns:
+            columns.append(c)
+        columns.append("index")
+        self.ui.CsvVisualizer.setHorizontalHeaderLabels(columns)
         self.ui.CsvVisualizer.blockSignals(False)
 
     def createTable(self):
-        fname, something = QFileDialog.getOpenFileName(self, 'Open file', '', "Csv files (*.csv)")
+        fname, something = QFileDialog.getOpenFileName(self, 'Open file', '', "Xlsx files (*.xlsx)")
         if fname:
             self.data_file = fname
         else:
             return
-        self.df = pd.read_csv(self.data_file, skipinitialspace=True)
+        self.df = pd.read_excel(self.data_file, sheet_name=0)
         self.updateTable(self.df)
 
     def new_option(self):
@@ -108,8 +112,11 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         print(categories)
         selected_col = self.ui.CsvVisualizer.currentColumn()
         filtered_index = ~self.df[self.df.columns[selected_col]].isin(categories)
+        filter_nan = False
+        if "nan" in categories:
+            filter_nan = True
         filtered_index = ~self.df[self.df.columns[selected_col]].apply(
-            lambda x: bool(str(x) != "nan" and all(elem.strip() in categories for elem in x.split(","))))
+            lambda x: bool((str(x) != "nan" and all(elem.strip() in categories for elem in x.split(","))) or (str(x) == "nan" and filter_nan)))
         filtered_df = self.df[filtered_index]
         self.updateTable(filtered_df)
 
@@ -127,12 +134,12 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.df.iloc[real_row, col] = self.ui.CsvVisualizer.item(row, col).text()
 
     def SaveFile(self):
-        fname, something = QFileDialog.getSaveFileName(self, 'Save file', '', "Csv files (*.csv)")
+        fname, something = QFileDialog.getSaveFileName(self, 'Save file', '', "Xlsx files (*.xlsx)")
         if fname:
             self.data_file = fname
         else:
             return
-        self.df.to_csv(self.data_file, index_label=False)
+        self.df.to_excel(self.data_file, index_label=None)
 
     def ProcessFileMenu(self, action):
         if action == self.ui.actionOpen:
