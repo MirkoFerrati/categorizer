@@ -61,6 +61,9 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
                 if stripped not in self.items:
                     self.items.add(stripped)
                     self.ui.ListSelector.addItem(stripped)
+        self.ui.ListSelector.setSortingEnabled(True)
+        self.ui.ListSelector.sortItems()
+
 
     def RemoveOption(self):
         remove = self.ui.ListSelector.selectedItems()
@@ -88,6 +91,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.items = uniques
         self.ui.ListSelector.clear()
         self.ui.ListSelector.addItems(self.items)
+        self.ui.ListSelector.setSortingEnabled(True)
+        self.ui.ListSelector.sortItems()
 
     def writeValues(self):
         val = ""
@@ -168,12 +173,12 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
     def wheelEvent(self, event: QWheelEvent):
         if event.modifiers() == QtCore.Qt.ControlModifier:
-            self.font_size = self.font_size + event.angleDelta().y()/3
+            self.font_size = self.font_size + event.angleDelta().y()/15
             if self.font_size < 5:
                 self.font_size = 5
-            fnt = self.ui.CsvVisualizer.font()
-            fnt.setPointSize(self.font_size)
-            self.ui.CsvVisualizer.setFont(fnt)
+            #fnt = self.ui.CsvVisualizer.font()
+            #fnt.setPointSize(self.font_size)
+            #self.ui.CsvVisualizer.setFont(fnt)
         else:
             event.ignore()
 
