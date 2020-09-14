@@ -2,6 +2,7 @@ import math
 import sys
 import re
 from importlib import reload
+import Levenshtein
 
 import PyQt5
 import PyQt5.QtCore as QtCore
@@ -91,7 +92,6 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.items = uniques
         self.ui.ListSelector.clear()
         self.ui.ListSelector.addItems(self.items)
-        self.ui.ListSelector.setSortingEnabled(True)
         self.ui.ListSelector.sortItems()
 
     def writeValues(self):
@@ -192,12 +192,35 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
                     return True
         return False
 
+    def computeFancy(self):
+        if not self.fancy_suggestion:
+            return
+        self.ui.ListSelector.clearSelection()
+        value = str(self.ui.CsvVisualizer.currentItem().text())
+        words = filter(None, re.split("[, ]+", value))
+
+        words_l = set()
+        for w in words:
+            words_l.add(w)
+        print('number of comparison: {}'.format(str(self.ui.ListSelector.count())))
+        for c in range(self.ui.ListSelector.count()):
+            print(c)
+            c_text = self.ui.ListSelector.item(c).text()
+            for w in words_l:
+                print('comparing {} {}'.format(w, c_text))
+                if Levenshtein.distance(w, c_text) < 3:
+                    self.ui.ListSelector.item(c).setSelected(True)
+
+    def enableFancy(self):
+        self.fancy_suggestion = self.ui.EnableFancy.isChecked()
+
     def __init__(self):
         """ Initialization
         Parameters
         ----------
         """
 
+        self.fancy_suggestion = False
         self.items = set()
         self.df = None
         self.df_cols = 1
@@ -222,6 +245,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.ClearOption.clicked.connect(self.ClearOptions)
         self.ui.CsvVisualizer.cellChanged.connect(self.UpdateDataframe)
         self.ui.DeselectButton.clicked.connect(self.DeselectAllOptions)
+        self.ui.EnableFancy.stateChanged.connect(self.enableFancy)
+        self.ui.CsvVisualizer.itemSelectionChanged.connect(self.computeFancy)
         self.ui.splitter.setStretchFactor(1, 0)
 
         self.ui.ListSelector.installEventFilter(self)

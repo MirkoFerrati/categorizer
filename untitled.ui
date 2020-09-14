@@ -111,11 +111,71 @@
              </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
+             <layout class="QVBoxLayout" name="verticalLayout_2" stretch="4,1,1,1,1,1,1,4">
               <item>
                <widget class="QPushButton" name="ConfirmButton">
                 <property name="text">
                  <string>Confirm and write</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="EnableFancy">
+                <property name="text">
+                 <string>Enable fancy</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="GreenButton">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0, 230, 117);</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="RedButton">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(204, 0, 0);</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="BlueButton">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(52, 101, 164);</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="PurpleButton">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(117, 80, 123);</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="YellowButton">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(237, 212, 0);</string>
+                </property>
+                <property name="text">
+                 <string/>
                 </property>
                </widget>
               </item>
