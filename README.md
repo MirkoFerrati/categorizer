@@ -12,7 +12,8 @@ we use python3, so run the entry point:
 
 ``` python3 load_show.py```
 
-You will need to get a xlsx with your data to be categorized to test the system
+You will need to get a xlsx with your data to be categorized to test the system.
+Check the data.xlsx as a starting point and check the GIF in the repo to see it in action.
 
 - Once the window is loaded, use the menu to open a xlsx file (only 1 sheet is supported at the moment).
 - The GUI can detect automatically categories once a column is selected, use LoadFromColumn for that.
