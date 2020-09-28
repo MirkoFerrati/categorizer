@@ -192,6 +192,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
     def computeFancy(self):
         if not self.fancy_suggestion:
             return
+        if self.ui.CsvVisualizer.currentItem() is None:
+            return
         self.ui.ListSelector.clearSelection()
         value = str(self.ui.CsvVisualizer.currentItem().text())
         words = filter(None, re.split("[, ]+", value))
