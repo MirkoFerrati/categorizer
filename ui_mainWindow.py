@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file 'untitled.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -144,6 +142,8 @@ class Ui_MainWindow(object):
         self.menuOpenFile.setObjectName("menuOpenFile")
         self.menuCategories = QtWidgets.QMenu(self.menubar)
         self.menuCategories.setObjectName("menuCategories")
+        self.menuEditing = QtWidgets.QMenu(self.menubar)
+        self.menuEditing.setObjectName("menuEditing")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -164,8 +164,15 @@ class Ui_MainWindow(object):
         self.actionHide_good_ones.setObjectName("actionHide_good_ones")
         self.actionDeselect_All = QtWidgets.QAction(MainWindow)
         self.actionDeselect_All.setObjectName("actionDeselect_All")
+        self.actionSave_as = QtWidgets.QAction(MainWindow)
+        self.actionSave_as.setObjectName("actionSave_as")
+        self.actionUndo = QtWidgets.QAction(MainWindow)
+        self.actionUndo.setObjectName("actionUndo")
+        self.actionRedo = QtWidgets.QAction(MainWindow)
+        self.actionRedo.setObjectName("actionRedo")
         self.menuOpenFile.addAction(self.actionOpen)
         self.menuOpenFile.addAction(self.actionSave)
+        self.menuOpenFile.addAction(self.actionSave_as)
         self.menuCategories.addAction(self.actionLoad_from_column)
         self.menuCategories.addAction(self.actionRemove_options)
         self.menuCategories.addAction(self.actionAdd_options)
@@ -174,8 +181,11 @@ class Ui_MainWindow(object):
         self.menuCategories.addAction(self.actionDeselect_All)
         self.menuCategories.addSeparator()
         self.menuCategories.addAction(self.actionHide_good_ones)
+        self.menuEditing.addAction(self.actionUndo)
+        self.menuEditing.addAction(self.actionRedo)
         self.menubar.addAction(self.menuOpenFile.menuAction())
         self.menubar.addAction(self.menuCategories.menuAction())
+        self.menubar.addAction(self.menuEditing.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -193,6 +203,7 @@ class Ui_MainWindow(object):
         self.AddButton.setText(_translate("MainWindow", "Add options"))
         self.menuOpenFile.setTitle(_translate("MainWindow", "Menu"))
         self.menuCategories.setTitle(_translate("MainWindow", "Categories"))
+        self.menuEditing.setTitle(_translate("MainWindow", "Editing"))
         self.actionOpen.setText(_translate("MainWindow", "Open..."))
         self.actionOpen.setShortcut(_translate("MainWindow", "Alt+O"))
         self.actionSave.setText(_translate("MainWindow", "Save..."))
@@ -209,3 +220,7 @@ class Ui_MainWindow(object):
         self.actionHide_good_ones.setShortcut(_translate("MainWindow", "Alt+H"))
         self.actionDeselect_All.setText(_translate("MainWindow", "Deselect All"))
         self.actionDeselect_All.setShortcut(_translate("MainWindow", "Alt+W"))
+        self.actionSave_as.setText(_translate("MainWindow", "Save as..."))
+        self.actionUndo.setText(_translate("MainWindow", "Undo"))
+        self.actionRedo.setText(_translate("MainWindow", "Redo"))
+

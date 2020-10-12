@@ -1,6 +1,7 @@
 import math
 import sys
 import re
+from collections import deque
 from importlib import reload
 import Levenshtein
 
@@ -18,6 +19,18 @@ from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget, QPushButton, \
 import ui_mainWindow
 import pandas as pd
 
+
+class History():
+    def __init__(self):
+        self.stack = deque(maxlen = 10)
+
+    def push(self, df):
+        self.stack.append(df.copy())
+
+    def pop(self):
+        if len(self.stack) == 0:
+            return None
+        return self.stack.pop()
 
 class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
@@ -47,10 +60,11 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
     def createTable(self):
         fname, something = QFileDialog.getOpenFileName(self, 'Open file', '', "Xlsx files (*.xlsx)")
         if fname:
-            self.data_file = fname
+            self.ui.statusbar.showMessage("opening "+fname, 3000)
         else:
             return
-        self.df = pd.read_excel(self.data_file, sheet_name=0)
+        self.df = pd.read_excel(fname, sheet_name=0)
+        self.ui.statusbar.showMessage(fname + " opened", 3000)
         self.updateTable(self.df)
 
     def new_option(self):
@@ -73,9 +87,11 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
                 self.items.remove(i.text())
         self.ui.ListSelector.clear()
         self.ui.ListSelector.addItems(self.items)
+        self.ui.statusbar.showMessage("Options removed", 3000)
 
     def ClearOptions(self):
         self.ui.ListSelector.clear()
+        self.ui.statusbar.showMessage("Options cleared", 3000)
 
     def LoadOptions(self):
         col = self.ui.CsvVisualizer.currentColumn()
@@ -93,8 +109,13 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.ListSelector.clear()
         self.ui.ListSelector.addItems(self.items)
         self.ui.ListSelector.sortItems()
+        self.ui.statusbar.showMessage("Loaded %s options"%str(len(uniques)), 3000)
+
 
     def writeValues(self):
+        self.history.push(self.df)
+        self.ui.CsvVisualizer.blockSignals(True)
+
         val = ""
         sep = ""
         if len(self.ui.ListSelector.selectedItems()) == 0:
@@ -107,11 +128,14 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
                 sep = ", "
         for cell in self.ui.CsvVisualizer.selectedItems():
             cell.setText(val)
+            self.UpdateDataframeNoHistory(cell.row(), cell.column())
         self.ui.ListSelector.clearSelection()
-        row = self.ui.CsvVisualizer.currentRow()
-        col = self.ui.CsvVisualizer.currentColumn()
         if len(self.ui.CsvVisualizer.selectedItems()) == 1:
+            row = self.ui.CsvVisualizer.currentRow()
+            col = self.ui.CsvVisualizer.currentColumn()
             self.ui.CsvVisualizer.setCurrentCell(row+1, col)
+        self.ui.CsvVisualizer.blockSignals(False)
+
 
     def applyFilter(self):
         categories = [str(self.ui.ListSelector.item(i).text()).strip() for i in range(self.ui.ListSelector.count())]
@@ -123,12 +147,14 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         if "nan" in categories:
             filter_nan = True
         filtered_index = ~self.df[self.df.columns[selected_col]].apply(
-            lambda x: bool((str(x) != "nan" and all(elem.strip() in categories for elem in x.split(","))) or (str(x) == "nan" and filter_nan)))
+            lambda x: bool((str(x) != "nan" and all(elem.strip() in categories for elem in str(x).split(","))) or (str(x) == "nan" and filter_nan)))
         filtered_df = self.df[filtered_index]
         self.updateTable(filtered_df)
+        self.ui.statusbar.showMessage("Applied visibility filter", 3000)
 
     def restoreAll(self):
         self.updateTable(self.df)
+        self.ui.statusbar.showMessage("Restored full visibility", 3000)
 
     def filterValues(self):
         if self.ui.FilterBox.isChecked():
@@ -137,22 +163,30 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             self.restoreAll()
 
     def UpdateDataframe(self, row, col):
+        self.history.push(self.df)
+        self.UpdateDataframeNoHistory(row, col)
+
+    def UpdateDataframeNoHistory(self, row, col):
         real_row = int(self.ui.CsvVisualizer.item(row, self.df_cols).text())
         self.df.iloc[real_row, col] = self.ui.CsvVisualizer.item(row, col).text()
 
-    def SaveFile(self):
-        fname, something = QFileDialog.getSaveFileName(self, 'Save file', '', "Xlsx files (*.xlsx)")
-        if fname:
-            self.data_file = fname
-        else:
-            return
+    def SaveFile(self, find_name):
+        if find_name or not self.data_file:
+            fname, something = QFileDialog.getSaveFileName(self, 'Save file', '', "Xlsx files (*.xlsx)")
+            if fname:
+               self.data_file = fname
+            else:
+               return
         self.df.to_excel(self.data_file, index_label=None)
+        self.ui.statusbar.showMessage("Saved file "+self.data_file, 3000)
 
     def ProcessFileMenu(self, action):
         if action == self.ui.actionOpen:
             self.createTable()
         if action == self.ui.actionSave:
-            self.SaveFile()
+            self.SaveFile(False)
+        if action == self.ui.actionSave_as:
+            self.SaveFile(True)
 
     def DeselectAllOptions(self):
         self.ui.ListSelector.clearSelection()
@@ -170,6 +204,28 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             self.ui.FilterBox.toggle()
         if action == self.ui.actionDeselect_All:
             self.DeselectAllOptions()
+
+    def ProcessEditingMenu(self, action):
+        # push always K-1 before latest action,
+        # save latest K inside redo
+        # pop the state K-1 before latest
+        if action == self.ui.actionUndo:
+            old_df = self.history.pop()
+            if old_df is not None:
+                self.redo_history.push(self.df)
+                self.df = old_df
+                self.updateTable(self.df)
+                self.ui.statusbar.showMessage("Undo done", 1000)
+        # push always state K+1 inside redo
+        # save current state K inside undo
+        # pop latest state K+1
+        if action == self.ui.actionRedo:
+            new_df = self.redo_history.pop()
+            if new_df is not None:
+                self.history.push(self.df)
+                self.df = new_df
+                self.updateTable(self.df)
+                self.ui.statusbar.showMessage("Redo done", 1000)
 
     def wheelEvent(self, event: QWheelEvent):
         if event.modifiers() == QtCore.Qt.ControlModifier:
@@ -194,6 +250,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
     def computeFancy(self):
         if not self.fancy_suggestion:
+            return
+        if self.ui.CsvVisualizer.currentItem() is None:
             return
         self.ui.ListSelector.clearSelection()
         value = str(self.ui.CsvVisualizer.currentItem().text())
@@ -226,6 +284,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.df_cols = 1
         self.df_rows = 1
         self.font_size = 12
+        self.history = History()
+        self.redo_history = History()
 
         # Base class
         QMainWindow.__init__(self)
@@ -233,9 +293,10 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         # Initialize the UI widgets
         self.ui = ui_mainWindow.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.data_file = "data.csv"
+        self.data_file = None
         self.ui.menuCategories.triggered[QAction].connect(self.ProcessCategoryMenu)
         self.ui.menuOpenFile.triggered[QAction].connect(self.ProcessFileMenu)
+        self.ui.menuEditing.triggered[QAction].connect(self.ProcessEditingMenu)
 
         self.ui.ConfirmButton.clicked.connect(self.writeValues)
         self.ui.AddButton.clicked.connect(self.new_option)

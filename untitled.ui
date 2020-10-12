@@ -227,6 +227,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
    </widget>
    <widget class="QMenu" name="menuCategories">
     <property name="title">
@@ -241,8 +242,16 @@
     <addaction name="separator"/>
     <addaction name="actionHide_good_ones"/>
    </widget>
+   <widget class="QMenu" name="menuEditing">
+    <property name="title">
+     <string>Editing</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuOpenFile"/>
    <addaction name="menuCategories"/>
+   <addaction name="menuEditing"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
@@ -307,6 +316,21 @@
    </property>
    <property name="shortcut">
     <string>Alt+W</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>
