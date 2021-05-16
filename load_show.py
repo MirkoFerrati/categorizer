@@ -20,9 +20,9 @@ import ui_mainWindow
 import pandas as pd
 
 
-class History():
+class History:
     def __init__(self):
-        self.stack = deque(maxlen = 10)
+        self.stack = deque(maxlen=10)
 
     def push(self, df):
         self.stack.append(df.copy())
@@ -31,6 +31,7 @@ class History():
         if len(self.stack) == 0:
             return None
         return self.stack.pop()
+
 
 class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
@@ -48,9 +49,9 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
                 self.ui.CsvVisualizer.setItem(i, j, QTableWidgetItem(x))
             x = str(dataframe.index.values[i])
             item = QTableWidgetItem(x)
-            item.setFlags(QtCore.Qt.NoItemFlags)# | QtCore.Qt.ItemIsSelectable)
+            item.setFlags(QtCore.Qt.NoItemFlags) # | QtCore.Qt.ItemIsSelectable)
             self.ui.CsvVisualizer.setItem(i, self.df_cols, item)
-        columns=[]
+        columns = []
         for c in dataframe.columns:
             columns.append(c)
         columns.append("index")
@@ -58,13 +59,13 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.CsvVisualizer.blockSignals(False)
 
     def createTable(self):
-        fname, something = QFileDialog.getOpenFileName(self, 'Open file', '', "Xlsx files (*.xlsx)")
-        if fname:
-            self.ui.statusbar.showMessage("opening "+fname, 3000)
+        f_name, something = QFileDialog.getOpenFileName(self, 'Open file', '', "Xlsx files (*.xlsx)")
+        if f_name:
+            self.ui.statusbar.showMessage("opening "+f_name, 3000)
         else:
             return
-        self.df = pd.read_excel(fname, sheet_name=0)
-        self.ui.statusbar.showMessage(fname + " opened", 3000)
+        self.df = pd.read_excel(f_name, sheet_name=0)
+        self.ui.statusbar.showMessage(f_name + " opened", 3000)
         self.updateTable(self.df)
 
     def new_option(self):
@@ -142,7 +143,6 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
         print(categories)
         selected_col = self.ui.CsvVisualizer.currentColumn()
-        filtered_index = ~self.df[self.df.columns[selected_col]].isin(categories)
         filter_nan = False
         if "nan" in categories:
             filter_nan = True
@@ -172,11 +172,11 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
     def SaveFile(self, find_name):
         if find_name or not self.data_file:
-            fname, something = QFileDialog.getSaveFileName(self, 'Save file', '', "Xlsx files (*.xlsx)")
-            if fname:
-               self.data_file = fname
+            f_name, something = QFileDialog.getSaveFileName(self, 'Save file', '', "Xlsx files (*.xlsx)")
+            if f_name:
+                self.data_file = f_name
             else:
-               return
+                return
         self.df.to_excel(self.data_file, index_label=None)
         self.ui.statusbar.showMessage("Saved file "+self.data_file, 3000)
 
