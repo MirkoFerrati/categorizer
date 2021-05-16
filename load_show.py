@@ -57,6 +57,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             columns.append(c)
         columns.append("index")
         self.ui.CsvVisualizer.setHorizontalHeaderLabels(columns)
+        self.ui.CsvVisualizer.setSortingEnabled(True)
         self.ui.CsvVisualizer.blockSignals(False)
 
     def createTable(self):
@@ -81,7 +82,6 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.ListSelector.setSortingEnabled(True)
         self.ui.ListSelector.sortItems()
 
-
     def RemoveOption(self):
         remove = self.ui.ListSelector.selectedItems()
         for i in remove:
@@ -89,6 +89,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
                 self.items.remove(i.text())
         self.ui.ListSelector.clear()
         self.ui.ListSelector.addItems(self.items)
+        self.ui.ListSelector.setSortingEnabled(True)
+        self.ui.ListSelector.sortItems()
         self.ui.statusbar.showMessage("Options removed", 3000)
 
     def ClearOptions(self):
@@ -99,7 +101,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         col = self.ui.CsvVisualizer.currentColumn()
         uniques = set()
         uniques.clear()
-        for i in range(self.df_rows):
+        for i in range(len(self.df.index)):
             splitted = str(self.df.iloc[i, col]).split(',')
             for s in splitted:
                 uniques.add(s.strip())
@@ -112,7 +114,6 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.ListSelector.addItems(self.items)
         self.ui.ListSelector.sortItems()
         self.ui.statusbar.showMessage("Loaded %s options"%str(len(uniques)), 3000)
-
 
     def writeValues(self):
         self.history.push(self.df)
