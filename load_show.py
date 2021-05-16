@@ -18,6 +18,8 @@ from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget, QPushButton, \
 
 import ui_mainWindow
 import pandas as pd
+import logging
+import logging.config
 
 
 class History:
@@ -37,8 +39,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
     def updateTable(self, dataframe):
         self.ui.CsvVisualizer.blockSignals(True)
-
-        print(dataframe.columns.values)
+        self.logger.debug(dataframe.columns.values)
         self.df_cols = len(dataframe.columns)
         self.df_rows = len(dataframe.index)
         self.ui.CsvVisualizer.setRowCount(self.df_rows)
@@ -137,11 +138,10 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             self.ui.CsvVisualizer.setCurrentCell(row+1, col)
         self.ui.CsvVisualizer.blockSignals(False)
 
-
     def applyFilter(self):
         categories = [str(self.ui.ListSelector.item(i).text()).strip() for i in range(self.ui.ListSelector.count())]
 
-        print(categories)
+        self.logger.debug(categories)
         selected_col = self.ui.CsvVisualizer.currentColumn()
         filter_nan = False
         if "nan" in categories:
@@ -255,18 +255,20 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
             return
         self.ui.ListSelector.clearSelection()
         value = str(self.ui.CsvVisualizer.currentItem().text())
-        words = filter(None, re.split("[, ]+", value))
-
+        words = filter(None, re.split("[,]+", value))
+        #self.logger.info('parsed words for fancy: ')
+        #self.logger.info(' '.join(words))
         words_l = set()
         for w in words:
-            words_l.add(w)
-        print('number of comparison: {}'.format(str(self.ui.ListSelector.count())))
+            words_l.add(w.strip())
+        self.logger.debug('number of comparison: {}'.format(str(self.ui.ListSelector.count())))
+        self.logger.debug('unique words for fancy: ')
+        self.logger.debug(' '.join(words_l))
         for c in range(self.ui.ListSelector.count()):
-            print(c)
             c_text = self.ui.ListSelector.item(c).text()
             for w in words_l:
-                print('comparing {} {}'.format(w, c_text))
-                if Levenshtein.distance(w, c_text) < 3:
+                self.logger.debug('comparing {} {} with distance {}'.format(w, c_text, Levenshtein.distance(w, c_text)))
+                if Levenshtein.distance(w, c_text) < round(0.4 + len(w)*0.2):
                     self.ui.ListSelector.item(c).setSelected(True)
 
     def enableFancy(self):
@@ -311,6 +313,8 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.splitter.setStretchFactor(1, 0)
 
         self.ui.ListSelector.installEventFilter(self)
+        self.logger = logging.getLogger('main_window')
+        logging.basicConfig(filename='categorizer.log', level=logging.DEBUG)
 
 
 def main():
