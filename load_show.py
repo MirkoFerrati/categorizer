@@ -315,7 +315,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
 
         self.ui.ListSelector.installEventFilter(self)
         self.logger = logging.getLogger('main_window')
-        logging.basicConfig(filename='categorizer.log', level=logging.DEBUG)
+        logging.basicConfig(filename='categorizer.log', level=logging.DEBUG, filemode='w')
 
 
 def main():
