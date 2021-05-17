@@ -82,19 +82,22 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         self.ui.ListSelector.setSortingEnabled(True)
         self.ui.ListSelector.sortItems()
 
+    def UpdateOptionVisualizer(self):
+        self.ui.ListSelector.clear()
+        self.ui.ListSelector.addItems(self.items)
+        self.ui.ListSelector.setSortingEnabled(True)
+        self.ui.ListSelector.sortItems()
+
     def RemoveOption(self):
         remove = self.ui.ListSelector.selectedItems()
         for i in remove:
             if i.text() in self.items:
                 self.items.remove(i.text())
-        self.ui.ListSelector.clear()
-        self.ui.ListSelector.addItems(self.items)
-        self.ui.ListSelector.setSortingEnabled(True)
-        self.ui.ListSelector.sortItems()
-        self.ui.statusbar.showMessage("Options removed", 3000)
+        self.UpdateOptionVisualizer()
 
     def ClearOptions(self):
         self.ui.ListSelector.clear()
+        self.UpdateOptionVisualizer()
         self.ui.statusbar.showMessage("Options cleared", 3000)
 
     def LoadOptions(self):
@@ -110,9 +113,7 @@ class MainWindow(QMainWindow, ui_mainWindow.Ui_MainWindow):
         if "" in uniques:
             uniques.remove("")
         self.items = uniques
-        self.ui.ListSelector.clear()
-        self.ui.ListSelector.addItems(self.items)
-        self.ui.ListSelector.sortItems()
+        self.UpdateOptionVisualizer()
         self.ui.statusbar.showMessage("Loaded %s options"%str(len(uniques)), 3000)
 
     def writeValues(self):
